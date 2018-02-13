@@ -1,0 +1,5 @@
+# Modules and intermediates
+*.mod
+*.o
+# Excec
+emis_stats
