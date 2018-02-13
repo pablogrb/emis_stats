@@ -41,7 +41,7 @@ IMPLICIT NONE
 	LOGICAL :: file_exists
 
 !	Counters
-	INTEGER :: i_sp
+	INTEGER :: i_sp, i_hr
 
 !	------------------------------------------------------------------------------------------
 !	Entry point
@@ -91,13 +91,39 @@ IMPLICIT NONE
 !	Header
 	CALL csv_write (csv_unit,'date',.FALSE.)
 	CALL csv_write (csv_unit,'time',.FALSE.)
-	DO i_sp=1,fl%nspec
+	DO i_sp = 1,fl_inp%nspec
 		IF (i_sp.LT.fl_inp%nspec) THEN
 			csv_record_end=.FALSE.
 		ELSE
 			csv_record_end=.TRUE.
 		END IF
 		CALL csv_write (csv_unit,fl_inp%c_spname(i_sp),csv_record_end)
+	END DO
+
+!	Calculate and write the totals
+	DO i_hr = 1, fl_inp%update_times
+!	 	Write the date and time
+		CALL csv_write (csv_unit,fl_inp%idate,.FALSE.)
+		CALL csv_write (csv_unit,fl_inp%nbgtim(i_hr),.FALSE.)
+
+!		Get/write the concentrations
+		DO i_sp = 1, fl_inp%nspec
+			IF (i_sp.LT.fl_inp%nspec) THEN
+				csv_record_end=.FALSE.
+			ELSE
+				csv_record_end=.TRUE.
+			END IF
+!			Get emissions according to file type
+			SELECT CASE (fl_inp%ftype)
+			CASE ('EMISSIONS ')
+				CALL csv_write (csv_unit,SUM(fl_inp%aemis(:,:,i_hr,i_sp)),csv_record_end)
+			CASE ('PTSOURCE  ')
+			CASE DEFAULT
+!				This should never run provided the filetype check worked
+				WRITE(*,*) 'Not a valid file type'
+				CALL EXIT(99)
+			END SELECT
+		END DO
 	END DO
 
 END PROGRAM emis_stats
