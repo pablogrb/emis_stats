@@ -74,8 +74,8 @@ IMPLICIT NONE
 !	Check the file type
 	CALL inquire_header(fl_inp,inp_file)
 !	Check for file type
-	IF (fl_inp%ftype .NE. 'EMISSIONS') THEN
-	! IF (.NOT. (fl_inp%ftype .EQ. 'EMISSIONS ' .OR. fl_inp%ftype .EQ. 'PTSOURCE  ')) THEN
+	! IF (fl_inp%ftype .NE. 'EMISSIONS') THEN
+	IF (.NOT. (fl_inp%ftype .EQ. 'EMISSIONS ' .OR. fl_inp%ftype .EQ. 'PTSOURCE  ')) THEN
 		WRITE(*,*) 'Not a valid file type'
 		CALL EXIT(0)
 	END IF
@@ -118,6 +118,7 @@ IMPLICIT NONE
 			CASE ('EMISSIONS ')
 				CALL csv_write (csv_unit,SUM(fl_inp%aemis(:,:,i_hr,i_sp)),csv_record_end)
 			CASE ('PTSOURCE  ')
+				CALL csv_write (csv_unit,SUM(fl_inp%ptemis(i_hr,:,i_sp)),csv_record_end)
 			CASE DEFAULT
 !				This should never run provided the filetype check worked
 				WRITE(*,*) 'Not a valid file type'
