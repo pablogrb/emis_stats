@@ -29,16 +29,19 @@ IMPLICIT NONE
 
 ! 	Data type modules
 	TYPE(UAM_IV) :: fl_inp							! Current input average file
-	CHARACTER(LEN=256) :: inp_file					! File names
+	CHARACTER(LEN=256) :: inp_file					! Input file name
 
 !	csv file
-	CHARACTER(LEN=256) :: out_file
+	CHARACTER(LEN=256) :: out_file					! Ouput csv file name
+	LOGICAL :: csv_record_end						! Logical marker of end of record
+	INTEGER :: csv_unit								! Fortran unit of the csv file
 
 !	Argument control
 	INTEGER :: arg_num
 	LOGICAL :: file_exists
 
 !	Counters
+	INTEGER :: i_sp
 
 !	------------------------------------------------------------------------------------------
 !	Entry point
@@ -59,12 +62,42 @@ IMPLICIT NONE
 	IF (.NOT. file_exists) THEN
 		WRITE(*,*) 'Input file ', TRIM(inp_file), ' does not exist'
 		CALL EXIT(1)
-	END IF	
+	END IF
 	INQUIRE(FILE=TRIM(out_file), EXIST=file_exists)
 	IF (file_exists) THEN
 		WRITE(*,*) 'Output file ', TRIM(inp_file), ' exists'
 		WRITE(*,*) 'will not overwrite'
 		CALL EXIT(1)
 	END IF
+
+!	------------------------------------------------------------------------------------------
+!	Check the file type
+	CALL inquire_header(fl_inp,inp_file)
+!	Check for file type
+	IF (fl_inp%ftype .NE. 'EMISSIONS') THEN
+	! IF (.NOT. (fl_inp%ftype .EQ. 'EMISSIONS ' .OR. fl_inp%ftype .EQ. 'PTSOURCE  ')) THEN
+		WRITE(*,*) 'Not a valid file type'
+		CALL EXIT(0)
+	END IF
+!	Open the file
+	CALL read_uamfile(fl_inp,inp_file)
+
+!	------------------------------------------------------------------------------------------
+!	Set up the csv
+
+!	Open the output CSV file
+	OPEN(NEWUNIT=csv_unit,FILE=TRIM(out_file),STATUS='NEW')
+
+!	Header
+	CALL csv_write (csv_unit,'date',.FALSE.)
+	CALL csv_write (csv_unit,'time',.FALSE.)
+	DO i_sp=1,fl%nspec
+		IF (i_sp.LT.fl_inp%nspec) THEN
+			csv_record_end=.FALSE.
+		ELSE
+			csv_record_end=.TRUE.
+		END IF
+		CALL csv_write (csv_unit,fl_inp%c_spname(i_sp),csv_record_end)
+	END DO
 
 END PROGRAM emis_stats
