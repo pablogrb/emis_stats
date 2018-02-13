@@ -5,9 +5,6 @@
 MODULE class_UAM_IV
 IMPLICIT NONE
 
-! 	Public variables
-	PUBLIC :: UAM_IV
-
 ! 	Boundary parameter derived type structure
 	TYPE :: UAM_BC_PAR
 ! 		Parameter
