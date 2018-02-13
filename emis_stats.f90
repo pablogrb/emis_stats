@@ -116,8 +116,10 @@ IMPLICIT NONE
 !			Get emissions according to file type
 			SELECT CASE (fl_inp%ftype)
 			CASE ('EMISSIONS ')
+!				Add all emissions for each hour and species through rows and columns
 				CALL csv_write (csv_unit,SUM(fl_inp%aemis(:,:,i_hr,i_sp)),csv_record_end)
 			CASE ('PTSOURCE  ')
+!				Add all emissions for each hour and species through all stacks
 				CALL csv_write (csv_unit,SUM(fl_inp%ptemis(i_hr,:,i_sp)),csv_record_end)
 			CASE DEFAULT
 !				This should never run provided the filetype check worked

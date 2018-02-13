@@ -3,3 +3,5 @@
 *.o
 # Excec
 emis_stats
+# test output
+*.asc
