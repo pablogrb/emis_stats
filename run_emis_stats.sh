@@ -135,7 +135,7 @@ fi
 # Default $scenario value
 if [ -z $scenario ]
 	then
-	scenario="CACES"
+	scenario="CACES_pnt"
 fi
 
 # Default $forecast value
@@ -203,11 +203,10 @@ do
 	# Process each file
 	for i in $(eval echo {0..$((no_sectors-1))})
 	do
-		# inp_path=${BASE_PATH}/${sector_names[i]}/point.${sector_names[i]}.camx.${sector_date[i]}.bin
-		# out_path=${BASE_PATH}/${sector_names[i]}/point.${sector_names[i]}.camx.${tvdate[4]}${tvdate[1]}${tvdate[2]}.asc
 		source $scenario.sh
-		echo $inp_path
-		echo $out_path
+		# echo $inp_path
+		# echo $out_path
+		./emis_stats $inp_path $out_path
 	done
 
 done
