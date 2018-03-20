@@ -36,6 +36,8 @@ IMPLICIT NONE
 	LOGICAL :: csv_record_end						! Logical marker of end of record
 	INTEGER :: csv_unit								! Fortran unit of the csv file
 
+	REAL :: emis_total								! Output sum
+
 !	Argument control
 	INTEGER :: arg_num
 	LOGICAL :: file_exists
@@ -65,7 +67,7 @@ IMPLICIT NONE
 	END IF
 	INQUIRE(FILE=TRIM(out_file), EXIST=file_exists)
 	IF (file_exists) THEN
-		WRITE(*,*) 'Output file ', TRIM(inp_file), ' exists'
+		WRITE(*,*) 'Output file ', TRIM(out_file), ' exists'
 		WRITE(*,*) 'will not overwrite'
 		CALL EXIT(1)
 	END IF
@@ -117,10 +119,12 @@ IMPLICIT NONE
 			SELECT CASE (fl_inp%ftype)
 			CASE ('EMISSIONS ')
 !				Add all emissions for each hour and species through rows and columns
-				CALL csv_write (csv_unit,SUM(fl_inp%aemis(:,:,i_hr,i_sp)),csv_record_end)
+				emis_total = SUM(fl_inp%aemis(:,:,i_hr,i_sp))
+				CALL csv_write (csv_unit,emis_total,csv_record_end)
 			CASE ('PTSOURCE  ')
 !				Add all emissions for each hour and species through all stacks
-				CALL csv_write (csv_unit,SUM(fl_inp%ptemis(i_hr,:,i_sp)),csv_record_end)
+				emis_total = SUM(fl_inp%ptemis(i_hr,:,i_sp))
+				CALL csv_write (csv_unit,emis_total,csv_record_end)
 			CASE DEFAULT
 !				This should never run provided the filetype check worked
 				WRITE(*,*) 'Not a valid file type'
