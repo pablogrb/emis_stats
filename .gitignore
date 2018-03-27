@@ -3,5 +3,8 @@
 *.o
 # Excec
 emis_stats
+totalize_uam
 # test output
 *.asc
+# camx binaries
+*.bin

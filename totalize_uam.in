@@ -1,0 +1,14 @@
+! Control file for totalize_uam
+! IO
+$FILE_CONTROL
+	! Number of files
+	! nfiles file paths must be provided
+	nfiles = 2
+$END
+$FILE_IO
+	! Input files
+	inp_file(1) = '/Users3/pablogar/CACES_2017/12NEUS/area/beis/area.beis.camx.20170211.12NEUS.bin'
+	inp_file(2) = '/Users3/pablogar/CACES_2017/12NEUS/area/beis/area.beis.camx.20170212.12NEUS.bin'
+	! Output file
+	out_file = 'area.beis.camx.20170212.12NEUS.total.bin'
+$END
