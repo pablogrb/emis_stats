@@ -12,7 +12,7 @@ IMPLICIT NONE
 ! ------------------------------------------------------------------------------------------
 ! Purpose:
 ! 	Calculates totals for all pollutants of type
-!	'EMISSIONS '
+!	'EMISSIONS ' and 'PTSOURCE  '
 !	This is a limitation of the utils_uam_iv implementation, for now
 ! Inputs:
 ! 	Control file (namelist)

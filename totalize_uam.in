@@ -1,14 +1,40 @@
 ! Control file for totalize_uam
 ! IO
 $FILE_CONTROL
-	! Number of files
-	! nfiles file paths must be provided
-	nfiles = 2
+! Number of files
+! nfiles file paths must be provided
+nfiles = 28
 $END
 $FILE_IO
-	! Input files
-	inp_file(1) = '/Users3/pablogar/CACES_2017/12NEUS/area/beis/area.beis.camx.20170211.12NEUS.bin'
-	inp_file(2) = '/Users3/pablogar/CACES_2017/12NEUS/area/beis/area.beis.camx.20170212.12NEUS.bin'
-	! Output file
-	out_file = 'area.beis.camx.20170212.12NEUS.total.bin'
+! Input files
+inp_file(1) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(2) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(3) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(4) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170211.12NEUS.bin'
+inp_file(5) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170212.12NEUS.bin'
+inp_file(6) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170206.12NEUS.bin'
+inp_file(7) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(8) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(9) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(10) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(11) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170211.12NEUS.bin'
+inp_file(12) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170212.12NEUS.bin'
+inp_file(13) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170206.12NEUS.bin'
+inp_file(14) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(15) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(16) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(17) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(18) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170211.12NEUS.bin'
+inp_file(19) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170212.12NEUS.bin'
+inp_file(20) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170206.12NEUS.bin'
+inp_file(21) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(22) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(23) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(24) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+inp_file(25) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170211.12NEUS.bin'
+inp_file(26) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170212.12NEUS.bin'
+inp_file(27) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170206.12NEUS.bin'
+inp_file(28) = '/Users3/pablogar/CACES_2017/12NEUS/pnt/ptnonipm/point.ptnonipm.camx.20170207.12NEUS.bin'
+! Output file
+out_file = './point.ptnonipm.camx.20170228.12NEUS.total.bin'
 $END

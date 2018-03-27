@@ -8,3 +8,5 @@ totalize_uam
 *.asc
 # camx binaries
 *.bin
+# plots
+*.png

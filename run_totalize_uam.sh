@@ -151,18 +151,35 @@ fi
 # Load the scenario
 source $scenario.sh
 
-# Loop through the forcast days
-for i in $(eval echo {1..$forecast})
+# Loop through the sectors
+for i in $(eval echo {0..$((no_sectors-1))})
 do
-	# Today
-	get_date $tyear $tmonth $tday $((i-1))
-	declare -a tvdate=(${fvdate[@]})
+# debug
+	pause_message $pause "Work on sector ${sector_names[$i]}"
 
-	# Get the dates
-	merge_date=${tvdate[4]}${tvdate[1]}${tvdate[2]}
-	declare sector_date
-	for i in $(eval echo {0..$((no_sectors-1))})
+	# Build the start control file
+	cat << EOF > totalize_uam.in
+! Control file for totalize_uam
+! IO
+\$FILE_CONTROL
+! Number of files
+! nfiles file paths must be provided
+nfiles = $forecast
+\$END
+\$FILE_IO
+! Input files
+EOF
+
+	# Loop through the dates
+	for j in $(eval echo {1..$forecast})
 	do
+		# Today
+		get_date $tyear $tmonth $tday $((j-1))
+		declare -a tvdate=(${fvdate[@]})
+
+		# Get the dates
+		merge_date=${tvdate[4]}${tvdate[1]}${tvdate[2]}
+		declare sector_date
 		while IFS=',' read -r d0 d1 d2 d3 d4 d5 d6 d7
 		do
 			if [ $d0 = $merge_date ]; then
@@ -198,15 +215,78 @@ do
 				esac
 			fi
 		done < $DATE_PATH/smk_merge_dates_${tvdate[4]}${tvdate[1]}.txt
-	done
 
-	# Process each file
-	for i in $(eval echo {0..$((no_sectors-1))})
-	do
+		# Get the current file into the control file
 		source $scenario.sh
-		# echo $inp_path
-		# echo $out_path
-		./emis_stats $inp_path $out_path
+		echo "inp_file($j) = '$inp_path'" >> totalize_uam.in
 	done
 
+	# Finish the control file
+	echo "! Output file"				>> totalize_uam.in
+	echo "out_file = '$out_path'"		>> totalize_uam.in
+	echo "\$END"						>> totalize_uam.in
+
+	# debug
+	pause_message $pause "Process emission files?"
+	./totalize_uam
 done
+
+# # Loop through the forcast days
+# for i in $(eval echo {1..$forecast})
+# do
+# 	# Today
+# 	get_date $tyear $tmonth $tday $((i-1))
+# 	declare -a tvdate=(${fvdate[@]})
+
+# 	# Get the dates
+# 	merge_date=${tvdate[4]}${tvdate[1]}${tvdate[2]}
+# 	declare sector_date
+# 	for i in $(eval echo {0..$((no_sectors-1))})
+# 	do
+# 		while IFS=',' read -r d0 d1 d2 d3 d4 d5 d6 d7
+# 		do
+# 			if [ $d0 = $merge_date ]; then
+# 				case ${sector_dtype[i]} in
+# 					aveday_N)
+# 						trim $d1
+# 						sector_date[i]=$trim_var
+# 						break;;
+# 					aveday_Y)
+# 						trim $d2
+# 						sector_date[i]=$trim_var
+# 						break;;
+# 					mwdss_N )
+# 						trim $d3
+# 						sector_date[i]=$trim_var
+# 						break;;
+# 					mwdss_Y )
+# 						trim $d4
+# 						sector_date[i]=$trim_var
+# 						break;;
+# 					week_N  )
+# 						trim $d5
+# 						sector_date[i]=$trim_var
+# 						break;;
+# 					week_Y  )
+# 						trim $d6
+# 						sector_date[i]=$trim_var
+# 						break;;
+# 					all     )
+# 						trim $d7
+# 						sector_date[i]=$trim_var
+# 						break;;
+# 				esac
+# 			fi
+# 		done < $DATE_PATH/smk_merge_dates_${tvdate[4]}${tvdate[1]}.txt
+# 	done
+
+# 	# Process each file
+# 	for i in $(eval echo {0..$((no_sectors-1))})
+# 	do
+# 		source $scenario.sh
+# 		# echo $inp_path
+# 		# echo $out_path
+# 		./emis_stats $inp_path $out_path
+# 	done
+
+# done
