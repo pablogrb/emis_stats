@@ -27,7 +27,7 @@ IMPLICIT NONE
 ! ------------------------------------------------------------------------------------------
 ! Declarations
 TYPE(UAM_IV), ALLOCATABLE :: fl_inp(:)	! Input UAM-IV files
-TYPE(UAM_IV) :: fl_int					! intermediate UAM-IV file
+TYPE(UAM_IV) :: fl_int, fl_int2			! intermediate UAM-IV files
 TYPE(UAM_IV) :: fl_out
 CHARACTER(LEN=256), ALLOCATABLE :: inp_file(:)
 INTEGER :: nfiles							! Number of input files
@@ -87,12 +87,29 @@ DO i_fl = 1, nfiles
 	! Open each file
 	CALL read_uamfile(fl_inp(i_fl),inp_file(i_fl))
 END DO
+WRITE(*,*) SUM(fl_inp(1)%ptemis)
 
 ! Concatenate
 CALL concatenate(fl_inp,fl_int)
+WRITE(*,*) SUM(fl_int%ptemis)
 
 ! Totalize
-CALL totalize(fl_int,fl_out)
+CALL totalize(fl_int,fl_int2)
+
+! Flatten if PTSOURCE
+IF (fl_int2%ftype == 'PTSOURCE ') THEN
+	! Flatten
+	CALL flatten(fl_int2,fl_out)
+	WRITE(*,*) fl_out%ftype
+	WRITE(*,*) SHAPE(fl_out%aemis)
+ELSE
+	fl_out = fl_int2
+END IF
+WRITE(*,*) SUM(fl_int2%ptemis)
+
+WRITE(*,*) 'Ready to write'
+WRITE(*,*) fl_out%ftype
+WRITE(*,*) SHAPE(fl_out%aemis)
 
 ! Write out
 CALL write_uamfile(fl_out,out_file)
