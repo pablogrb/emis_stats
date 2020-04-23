@@ -248,16 +248,16 @@ SUBROUTINE concatenate(fl_inp, fl_out)
 	! Output frames
 	INTEGER :: n_frames							! Number of output frames
 
-	! Accounting for multiple stack lists
-	INTEGER :: uniques							! Number of unique stack lists
-	INTEGER, ALLOCATABLE :: stk_fl_index(:)		! Vector of stack list index, each element indicates
-												! 	which stack list corresponds to each file
-												!	If all share the same, all elements are 1
-												!	If all are different , all elements are i_fl
+	! ! Accounting for multiple stack lists
+	! INTEGER :: uniques							! Number of unique stack lists
+	! INTEGER, ALLOCATABLE :: stk_fl_index(:)		! Vector of stack list index, each element indicates
+	! 											! 	which stack list corresponds to each file
+	! 											!	If all share the same, all elements are 1
+	! 											!	If all are different , all elements are i_fl
 
 	! Counters
 	INTEGER :: i_fl
-	INTEGER :: i_sp
+	INTEGER :: i_sp, i_nx, i_ny
 
 	! ------------------------------------------------------------------------------------------
 	! Entry Point
@@ -322,62 +322,76 @@ SUBROUTINE concatenate(fl_inp, fl_out)
 			! Get the emissions
 			!            x y frames                species
 			! fl_out%aemis(:,:,24*(i_fl-1)+1:24*i_fl,:) = fl_inp(i_fl)%aemis
+			! WRITE(*,*) SHAPE(fl_out%aemis(:,:,24*(i_fl-1)+1:24*i_fl,:))
+			! WRITE(*,*) SHAPE(fl_inp(i_fl)%aemis)
 			! This segfaults mysteriously on some files
+			! DO i_sp = 1, fl_inp(i_fl)%nspec
+			! 	WRITE(*,*) i_sp
+			! 	fl_out%aemis(:,:,24*(i_fl-1)+1:24*i_fl,i_sp) = fl_inp(i_fl)%aemis(:,:,:,i_sp)
+			! END DO
+			! WRITE(*,*) SHAPE(fl_out%aemis(:,:,24*(i_fl-1)+1:24*i_fl,1))
+			! WRITE(*,*) SHAPE(fl_inp(i_fl)%aemis(:,:,:,1))
+			! Step by step to try and catch the segfault
 			DO i_sp = 1, fl_inp(i_fl)%nspec
-				fl_out%aemis(:,:,24*(i_fl-1)+1:24*i_fl,i_sp) = fl_inp(i_fl)%aemis(:,:,:,i_sp)
+				! WRITE(*,'(A,A)') 'Working on ', fl_inp(i_fl)%c_spname(i_sp)
+				DO i_nx = 1, fl_inp(i_fl)%nx
+					DO i_ny = 1, fl_inp(i_fl)%ny
+						fl_out%aemis(i_nx,i_ny,24*(i_fl-1)+1:24*i_fl,i_sp) = fl_inp(i_fl)%aemis(i_nx,i_ny,:,i_sp)
+					END DO
+				END DO
 			END DO
 		END DO
-	CASE ('PTSOURCE ' )
-		! Get the number of stacks
-		fl_out%nstk = fl_inp(1)%nstk
-		! ALLOCATE(stk_fl_index(SIZE(fl_inp)))
-		! stk_fl_index = 0
-		! CALL stk_index(fl_inp,stk_fl_index, uniques)
+	! CASE ('PTSOURCE ' )
+		! ! Get the number of stacks
+		! fl_out%nstk = fl_inp(1)%nstk
+		! ! ALLOCATE(stk_fl_index(SIZE(fl_inp)))
+		! ! stk_fl_index = 0
+		! ! CALL stk_index(fl_inp,stk_fl_index, uniques)
 
-		! Allocate the stack parameter arrays
-		ALLOCATE(fl_out%xstk(fl_out%nstk), fl_out%ystk(fl_out%nstk))
-		ALLOCATE(fl_out%hstk(fl_out%nstk), fl_out%dstk(fl_out%nstk))
-		ALLOCATE(fl_out%tstk(fl_out%nstk), fl_out%vstk(fl_out%nstk))
-		! Clone the stack parameter arrays
-		fl_out%xstk = fl_inp(1)%xstk
-		fl_out%ystk = fl_inp(1)%ystk
-		fl_out%hstk = fl_inp(1)%hstk
-		fl_out%dstk = fl_inp(1)%dstk
-		fl_out%tstk = fl_inp(1)%tstk
-		fl_out%vstk = fl_inp(1)%vstk
+		! ! Allocate the stack parameter arrays
+		! ALLOCATE(fl_out%xstk(fl_out%nstk), fl_out%ystk(fl_out%nstk))
+		! ALLOCATE(fl_out%hstk(fl_out%nstk), fl_out%dstk(fl_out%nstk))
+		! ALLOCATE(fl_out%tstk(fl_out%nstk), fl_out%vstk(fl_out%nstk))
+		! ! Clone the stack parameter arrays
+		! fl_out%xstk = fl_inp(1)%xstk
+		! fl_out%ystk = fl_inp(1)%ystk
+		! fl_out%hstk = fl_inp(1)%hstk
+		! fl_out%dstk = fl_inp(1)%dstk
+		! fl_out%tstk = fl_inp(1)%tstk
+		! fl_out%vstk = fl_inp(1)%vstk
 
-		! Allocate the stack description arrays
-		ALLOCATE(fl_out%icell(fl_out%update_times,fl_out%nstk))
-		ALLOCATE(fl_out%jcell(fl_out%update_times,fl_out%nstk))
-		ALLOCATE(fl_out%kcell(fl_out%update_times,fl_out%nstk))
-		ALLOCATE(fl_out%flow (fl_out%update_times,fl_out%nstk))
-		ALLOCATE(fl_out%plmht(fl_out%update_times,fl_out%nstk))
-		! Allocate the emissions array
-		ALLOCATE(fl_out%ptemis(fl_out%update_times,fl_out%nstk,fl_out%nspec))
+		! ! Allocate the stack description arrays
+		! ALLOCATE(fl_out%icell(fl_out%update_times,fl_out%nstk))
+		! ALLOCATE(fl_out%jcell(fl_out%update_times,fl_out%nstk))
+		! ALLOCATE(fl_out%kcell(fl_out%update_times,fl_out%nstk))
+		! ALLOCATE(fl_out%flow (fl_out%update_times,fl_out%nstk))
+		! ALLOCATE(fl_out%plmht(fl_out%update_times,fl_out%nstk))
+		! ! Allocate the emissions array
+		! ALLOCATE(fl_out%ptemis(fl_out%update_times,fl_out%nstk,fl_out%nspec))
 
-		! Work thorugh the files
-		DO i_fl = 1, SIZE(fl_inp)
-			WRITE(*,'(A,I2,A,I2,A)') 'Working on ', i_fl, ' of ', SIZE(fl_inp),' files'
-			! Get the time variant headers
-			! WRITE(*,*) 'Headers'
-			fl_out%ibgdat(24*(i_fl-1)+1:24*i_fl) = fl_inp(i_fl)%ibgdat
-			fl_out%iendat(24*(i_fl-1)+1:24*i_fl) = fl_inp(i_fl)%iendat
-			fl_out%nbgtim(24*(i_fl-1)+1:24*i_fl) = fl_inp(i_fl)%nbgtim
-			fl_out%nentim(24*(i_fl-1)+1:24*i_fl) = fl_inp(i_fl)%nentim
-			! Get the stack description arrays
-			! WRITE(*,*) 'Descriptors'
-			fl_out%icell(24*(i_fl-1)+1:24*i_fl,:) = fl_inp(i_fl)%icell
-			fl_out%jcell(24*(i_fl-1)+1:24*i_fl,:) = fl_inp(i_fl)%jcell
-			fl_out%kcell(24*(i_fl-1)+1:24*i_fl,:) = fl_inp(i_fl)%kcell
-			fl_out%flow (24*(i_fl-1)+1:24*i_fl,:) = fl_inp(i_fl)%flow
-			fl_out%plmht(24*(i_fl-1)+1:24*i_fl,:) = fl_inp(i_fl)%plmht
-			! Get the emissions
-			! WRITE(*,*) 'Emissions'
-			DO i_sp = 1, fl_inp(i_fl)%nspec
-				fl_out%ptemis(24*(i_fl-1)+1:24*i_fl,:,i_sp) = fl_inp(i_fl)%ptemis(:,:,i_sp)
-			END DO
-			! WRITE(*,*) SUM(fl_out%ptemis)
-		END DO
+		! ! Work thorugh the files
+		! DO i_fl = 1, SIZE(fl_inp)
+		! 	WRITE(*,'(A,I2,A,I2,A)') 'Working on ', i_fl, ' of ', SIZE(fl_inp),' files'
+		! 	! Get the time variant headers
+		! 	! WRITE(*,*) 'Headers'
+		! 	fl_out%ibgdat(24*(i_fl-1)+1:24*i_fl) = fl_inp(i_fl)%ibgdat
+		! 	fl_out%iendat(24*(i_fl-1)+1:24*i_fl) = fl_inp(i_fl)%iendat
+		! 	fl_out%nbgtim(24*(i_fl-1)+1:24*i_fl) = fl_inp(i_fl)%nbgtim
+		! 	fl_out%nentim(24*(i_fl-1)+1:24*i_fl) = fl_inp(i_fl)%nentim
+		! 	! Get the stack description arrays
+		! 	! WRITE(*,*) 'Descriptors'
+		! 	fl_out%icell(24*(i_fl-1)+1:24*i_fl,:) = fl_inp(i_fl)%icell
+		! 	fl_out%jcell(24*(i_fl-1)+1:24*i_fl,:) = fl_inp(i_fl)%jcell
+		! 	fl_out%kcell(24*(i_fl-1)+1:24*i_fl,:) = fl_inp(i_fl)%kcell
+		! 	fl_out%flow (24*(i_fl-1)+1:24*i_fl,:) = fl_inp(i_fl)%flow
+		! 	fl_out%plmht(24*(i_fl-1)+1:24*i_fl,:) = fl_inp(i_fl)%plmht
+		! 	! Get the emissions
+		! 	! WRITE(*,*) 'Emissions'
+		! 	DO i_sp = 1, fl_inp(i_fl)%nspec
+		! 		fl_out%ptemis(24*(i_fl-1)+1:24*i_fl,:,i_sp) = fl_inp(i_fl)%ptemis(:,:,i_sp)
+		! 	END DO
+		! 	! WRITE(*,*) SUM(fl_out%ptemis)
+		! END DO
 	CASE DEFAULT
 		WRITE(0,*) 'The UAM-IV type ', TRIM(fl_inp(1)%ftype), ' is not supported'
 	END SELECT
@@ -503,6 +517,8 @@ SUBROUTINE totalize(fl_inp, fl_out)
 	TYPE(UAM_IV), INTENT(IN) :: fl_inp			! Input UAM-IV object
 	TYPE(UAM_IV), INTENT(OUT) :: fl_out			! Dummy intermediate, cloned to fl_inp for output
 
+	INTEGER i_hr
+
 	! ------------------------------------------------------------------------------------------
 	! Entry Point
 
@@ -535,8 +551,18 @@ SUBROUTINE totalize(fl_inp, fl_out)
 		fl_out%iendat(1) = fl_inp%iendat(fl_inp%update_times)
 		fl_out%nbgtim(1) = fl_inp%nbgtim(1)
 		fl_out%nentim(1) = fl_inp%nentim(fl_inp%update_times)
+		WRITE(*,'(A,A)') 'Filetype is ', fl_inp%ftype
 		! Get the emissions
-		fl_out%aemis(:,:,1,:) = SUM(fl_inp%aemis,3)
+		! WRITE(*,*) SHAPE(fl_out%aemis(:,:,:,:))
+		! WRITE(*,*) SHAPE(fl_inp%aemis(:,:,:,:))
+		! This also magically segfaults
+		! WRITE(*,*) SHAPE(SUM(fl_inp%aemis,3))
+		! fl_out%aemis(:,:,1,:) = SUM(fl_inp%aemis,3)
+		! Doing in a loop magically fixes it :(
+		fl_out%aemis(:,:,1,:) = 0
+		DO i_hr = 1, fl_inp%update_times
+			fl_out%aemis(:,:,1,:) = fl_out%aemis(:,:,1,:) + fl_inp%aemis(:,:,i_hr,:)
+		END DO
 	CASE ('PTSOURCE  ')
 		! Get the time variant headers
 		fl_out%ibgdat(1) = fl_inp%ibgdat(1)

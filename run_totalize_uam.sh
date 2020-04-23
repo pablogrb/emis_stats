@@ -154,7 +154,8 @@ source $scenario.sh
 # Loop through the sectors
 for i in $(eval echo {0..$((no_sectors-1))})
 do
-# debug
+
+	# debug
 	pause_message $pause "Work on sector ${sector_names[$i]}"
 
 	# Build the start control file
@@ -176,6 +177,7 @@ EOF
 		# Today
 		get_date $tyear $tmonth $tday $((j-1))
 		declare -a tvdate=(${fvdate[@]})
+		source $scenario.sh
 
 		# Get the dates
 		merge_date=${tvdate[4]}${tvdate[1]}${tvdate[2]}
@@ -230,63 +232,3 @@ EOF
 	pause_message $pause "Process emission files?"
 	./totalize_uam
 done
-
-# # Loop through the forcast days
-# for i in $(eval echo {1..$forecast})
-# do
-# 	# Today
-# 	get_date $tyear $tmonth $tday $((i-1))
-# 	declare -a tvdate=(${fvdate[@]})
-
-# 	# Get the dates
-# 	merge_date=${tvdate[4]}${tvdate[1]}${tvdate[2]}
-# 	declare sector_date
-# 	for i in $(eval echo {0..$((no_sectors-1))})
-# 	do
-# 		while IFS=',' read -r d0 d1 d2 d3 d4 d5 d6 d7
-# 		do
-# 			if [ $d0 = $merge_date ]; then
-# 				case ${sector_dtype[i]} in
-# 					aveday_N)
-# 						trim $d1
-# 						sector_date[i]=$trim_var
-# 						break;;
-# 					aveday_Y)
-# 						trim $d2
-# 						sector_date[i]=$trim_var
-# 						break;;
-# 					mwdss_N )
-# 						trim $d3
-# 						sector_date[i]=$trim_var
-# 						break;;
-# 					mwdss_Y )
-# 						trim $d4
-# 						sector_date[i]=$trim_var
-# 						break;;
-# 					week_N  )
-# 						trim $d5
-# 						sector_date[i]=$trim_var
-# 						break;;
-# 					week_Y  )
-# 						trim $d6
-# 						sector_date[i]=$trim_var
-# 						break;;
-# 					all     )
-# 						trim $d7
-# 						sector_date[i]=$trim_var
-# 						break;;
-# 				esac
-# 			fi
-# 		done < $DATE_PATH/smk_merge_dates_${tvdate[4]}${tvdate[1]}.txt
-# 	done
-
-# 	# Process each file
-# 	for i in $(eval echo {0..$((no_sectors-1))})
-# 	do
-# 		source $scenario.sh
-# 		# echo $inp_path
-# 		# echo $out_path
-# 		./emis_stats $inp_path $out_path
-# 	done
-
-# done
